@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="zxx">
+<head>
+    <meta charset="UTF-8">
+    <meta name="description" content="Gym Template">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Gym | Metrics</title>
+
+    <!-- Google Font -->
+    <link href="https://fonts.googleapis.com/css?family=Muli:300,400,500,600,700,800,900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Oswald:300,400,500,600,700&display=swap" rel="stylesheet">
+
+    <!-- Css Styles -->
+    <link rel="stylesheet" href="css/bootstrap.min.css" type="text/css">
+    <link rel="stylesheet" href="css/font-awesome.min.css" type="text/css">
+    <link rel="stylesheet" href="css/style.css" type="text/css">
+    
+</head>
+<body>
+    <!-- Header Section Begin -->
+    <header class="header-section">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-lg-3">
+                    <div class="logo">
+                        <a href="./home.html">
+                            <p class="logo-text">FitTracker</p>
+                        </a>
+                    </div>
+                </div>
+                <div class="col-lg-9">
+                    <nav class="nav-menu">
+                        <ul>
+                            <li><a href="./home.html">Home</a></li>
+                            <li><a href="./team.html">Our Team</a></li>
+                            <li><a href="./bmi-calculator.html">Bmi calculate</a></li>
+                            <li class="active"><a href="./metrics.html">Metrics</a></li>
+                        </ul>
+                    </nav>
+                </div>
+            </div>
+        </div>
+    </header>
+    <!-- Header End -->
+
+    <!-- Metrics Section Begin -->
+    <section class="metrics-section spad">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-lg-6">
+                    <div class="metrics-form">
+                        <h2 class="text-center">Add Metrics</h2>
+                        <form id="metricsForm" onsubmit="return handleMetricsSubmit(event)">
+                            <div class="form-group">
+                                <label for="name">Name</label>
+                                <input type="text" id="name" name="name" class="form-control" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="calories">Calories Burned (kcal)</label>
+                                <input type="number" id="calories" name="calories" class="form-control" min="0" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="distance">Walked Distance (km)</label>
+                                <input type="number" id="distance" name="distance" class="form-control" step="0.01" min="0" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="steps">Steps Walked</label>
+                                <input type="number" id="steps" name="steps" class="form-control" min="0" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="sp02">SpO₂ (%)</label>
+                                <input type="number" id="sp02" name="sp02" class="form-control" min="0" max="100" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="duration">Workout Duration (hrs)</label>
+                                <input type="number" id="duration" name="duration" class="form-control" step="0.1" min="0" required>
+                            </div>
+                            <button type="submit" class="primary-btn add-metrics-btn">Add Metrics</button>
+                        </form>
+                    </div>
+
+                    <div class="metrics-list mt-4">
+                        <h3 class="text-center">Stored Metrics</h3>
+                        <ul id="metricsOutput" class="list-group">
+                            <!-- Metrics will be displayed here -->
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- Metrics Section End -->
+
+    <!-- Footer Section -->
+    <section class="footer-section">
+        <div class="container">
+            <p>&copy; <script>document.write(new Date().getFullYear());</script> FitTracker. All rights reserved.</p>
+        </div>
+    </section>
+    <!-- Footer Section End -->
+
+    <!-- Js Plugins -->
+    <script src="js/jquery-3.3.1.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/main.js"></script>
+
+    <!-- JavaScript for handling form submission and displaying metrics -->
+    <script>
+        function handleMetricsSubmit(event) {
+            event.preventDefault(); // Prevent form from submitting traditionally
+
+            // Get form values
+            const name = document.getElementById('name').value;
+            const calories = document.getElementById('calories').value;
+            const distance = document.getElementById('distance').value;
+            const steps = document.getElementById('steps').value;
+            const sp02 = document.getElementById('sp02').value;
+            const duration = document.getElementById('duration').value;
+
+            // Create a metrics object
+            const metrics = {
+                name,
+                calories,
+                distance,
+                steps,
+                sp02,
+                duration
+            };
+
+            // Store the metrics in local storage
+            let storedMetrics = JSON.parse(localStorage.getItem('metrics')) || [];
+            storedMetrics.push(metrics);
+            localStorage.setItem('metrics', JSON.stringify(storedMetrics));
+
+            // Reset the form
+            document.getElementById('metricsForm').reset();
+
+            // Display the updated metrics list
+            displayMetrics();
+
+            alert('Metrics added successfully!');
+        }
+
+        function displayMetrics() {
+            const metricsOutput = document.getElementById('metricsOutput');
+            metricsOutput.innerHTML = ''; // Clear previous output
+
+            // Get stored metrics from local storage
+            const storedMetrics = JSON.parse(localStorage.getItem('metrics')) || [];
+
+            // Populate the metrics output
+            storedMetrics.forEach((metric, index) => {
+                const li = document.createElement('li');
+                li.className = 'list-group-item';
+                li.innerHTML = `
+                    <strong>${metric.name}</strong>: 
+                    Calories: ${metric.calories} kcal, 
+                    Distance: ${metric.distance} km, 
+                    Steps: ${metric.steps}, 
+                    SpO₂: ${metric.sp02}%, 
+                    Duration: ${metric.duration} hrs
+                `;
+                metricsOutput.appendChild(li);
+            });
+        }
+
+        // Display metrics on page load
+        window.onload = displayMetrics;
+    </script>
+</body>
+</html>
+
